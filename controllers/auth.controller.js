@@ -3,9 +3,9 @@ const jwtHelper = require("../helpers/jwt.helper")
 const accessTokenSign = process.env.ACCESS_TOKEN_SECRET || "phuonghien"
 
 let isAuth = async (req, res, next) => {
-    const tokenFromClient = req.body.token || req.query.token || req.header["x-access-token"]
+    const tokenFromClient = req.body.token || req.query.token || req.headers["x-access-token"]
 
-    if (token) {
+    if (tokenFromClient != null && tokenFromClient != undefined) {
         try {
             const decoded = await jwtHelper.verifyToken(tokenFromClient, accessTokenSign)
 

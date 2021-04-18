@@ -1,12 +1,18 @@
+const authController = require('../controllers/auth.controller')
 const examController = require('../controllers/exam.controller')
 
 module.exports = app => {
-    var router = require('express').Router()
+    var authRouter = require('express').Router()
+    var examRouter = require('express').Router()
+
     const userController = require('../controllers/user.controller')
 
-    router.post('/login', userController.login)
-    router.post('/create', userController.create)
-    router.get('/exam', examController.get)
+    authRouter.post('/login', userController.login)
+    authRouter.post('/create', userController.create)
+    authRouter.get('/getnewtoken', userController.getNewToken)
+    app.use('/user', authRouter)
 
-    app.use('/user', router)
+    examRouter.get('/', examController.get)
+    examRouter.get('/:id', authController.isAuth, examController.getDetail)
+    app.use('/exam', examRouter)
 }

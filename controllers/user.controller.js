@@ -4,6 +4,7 @@ const User = db.user
 
 const accessTokenSign = process.env.ACCESS_TOKEN_SECRET || "phuonghien"
 const accessTokenLife = "1h"
+const refreshTokenLife = "240h"
 
 module.exports = {
     login: async(req, res) => {
@@ -13,13 +14,29 @@ module.exports = {
         }
         var user = await User.findOne({where: {userName: userData.userName, password: userData.password}})
         if(user !== null) {
-            const jwtToken = await jwtHelper.generateToken(userData, accessTokenSign, accessTokenLife)
+            const token = await jwtHelper.generateToken(userData, accessTokenSign, accessTokenLife)
+            const refreshToken = await jwtHelper.generateToken(userData, accessTokenSign, accessTokenLife)
             res.status(200).json({
-                token: jwtToken
+                token,
+                refreshToken
             })
         } else {
             res.status(402).send({
                 message: "Wrong input data"
+            })
+        }
+    },
+    getNewToken: async(req, res) => {
+        try {
+            var refreshToken = req.body.refreshToken || req.query.refreshToken || req.headers["x-access-refresh-token"]
+            var userData = await jwtHelper.verifyToken(refreshToken, accessTokenSign)
+            const token = await jwtHelper.generateToken(userData.data, accessTokenSign, accessTokenLife)
+            res.status(200).json({
+                token
+            })
+        } catch (error) {
+            res.status(500).json({
+                error: err.message
             })
         }
     },
