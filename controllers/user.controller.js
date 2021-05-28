@@ -3,7 +3,7 @@ const db = require('../models')
 const User = db.user
 
 const accessTokenSign = process.env.ACCESS_TOKEN_SECRET || "phuonghien"
-const accessTokenLife = "1h"
+const accessTokenLife = "100h"
 const refreshTokenLife = "240h"
 
 module.exports = {
